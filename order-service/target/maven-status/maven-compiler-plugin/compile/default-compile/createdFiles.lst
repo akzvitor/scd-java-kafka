@@ -1,0 +1,4 @@
+com\akzvitor\orderservice\kafka\OrderProducer.class
+com\akzvitor\orderservice\model\Order.class
+com\akzvitor\orderservice\OrderServiceApplication.class
+com\akzvitor\orderservice\controller\OrderController.class
