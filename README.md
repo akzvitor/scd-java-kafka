@@ -2,6 +2,26 @@
 
 ## Passo a passo para execução
 
+### Criação dos tópicos kafka
+
+1 - Iniciar os containers kafka e zookeper pelo docker-compose, executando o comando:
+
+```bash
+docker-compose up -d
+```
+
+2 - Criar os tópicos necessários, executando:
+
+```bash
+docker exec -it scd-java-kafka-kafka-1 kafka-topics --create --topic orders --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+```
+
+em seguida
+
+```bash
+docker exec -it scd-java-kafka-kafka-1 kafka-topics --create --topic inventory-events --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+```
+
 ## Escalabilidade
 
 ## Tolerância à falha
