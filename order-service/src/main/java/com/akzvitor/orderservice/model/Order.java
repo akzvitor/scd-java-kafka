@@ -1,15 +1,24 @@
 package com.akzvitor.orderservice.model;
 
+import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+@Entity
+@Table(name = "orders")
 public class Order {
+
+    @Id
     private UUID id;
+
     private Instant timestamp;
+
+    @ElementCollection
     private List<String> items;
 
-    public Order() { }
+    public Order() {
+    }
 
     public Order(UUID id, Instant timestamp, List<String> items) {
         this.id = id;

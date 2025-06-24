@@ -2,6 +2,7 @@ version: '3'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeper-scd-jkm
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
@@ -9,6 +10,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-scd-jkm
     depends_on:
       - zookeeper
     ports:
@@ -18,3 +20,13 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  postgres:
+      image: postgres:15
+      container_name: postgres-scd-jkm
+      environment:
+        POSTGRES_DB: ordersdb
+        POSTGRES_USER: vitor
+        POSTGRES_PASSWORD: senhaforte123
+      ports:
+        - "5432:5432"

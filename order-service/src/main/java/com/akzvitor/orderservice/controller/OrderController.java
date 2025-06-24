@@ -2,6 +2,7 @@ package com.akzvitor.orderservice.controller;
 
 import com.akzvitor.orderservice.kafka.OrderProducer;
 import com.akzvitor.orderservice.model.Order;
+import com.akzvitor.orderservice.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,10 +14,12 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderProducer orderProducer;
+    private final OrderRepository orderRepository;
 
     @Autowired
-    public OrderController(OrderProducer orderProducer) {
+    public OrderController(OrderProducer orderProducer, OrderRepository orderRepository) {
         this.orderProducer = orderProducer;
+        this.orderRepository = orderRepository;
     }
 
     @PostMapping
@@ -27,7 +30,9 @@ public class OrderController {
             orderRequest.getItems()
         );
 
+        orderRepository.save(order);
         orderProducer.sendOrder(order);
-        return "Pedido enviado com sucesso: " + order.getId();
+
+        return "Pedido criado e enviado com sucesso: " + order.getId();
     }
 }
