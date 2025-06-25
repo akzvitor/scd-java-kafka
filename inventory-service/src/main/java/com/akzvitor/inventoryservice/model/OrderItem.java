@@ -4,7 +4,6 @@ public class OrderItem {
     private String productCode;
     private int quantity;
 
-    // Getters e Setters
     public String getProductCode() {
         return productCode;
     }

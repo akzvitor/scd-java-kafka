@@ -13,12 +13,13 @@ docker-compose up -d
 2 - Criar os tópicos necessários, executando:
 
 ```bash
-docker exec -it kafka-scd-jkm kafka-topics.sh --create --topic orders --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+docker exec -it kafka-scd-jkm kafka-topics --create --topic orders --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 
 em seguida
 
 ```bash
-docker exec -it kafka-scd-jkm kafka-topics --create --topic inventory-events --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1```
+docker exec -it kafka-scd-jkm kafka-topics --create --topic inventory-events --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+```
 
 ## Escalabilidade
 
