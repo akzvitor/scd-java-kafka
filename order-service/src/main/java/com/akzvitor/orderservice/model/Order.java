@@ -1,26 +1,18 @@
 package com.akzvitor.orderservice.model;
 
-import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "orders")
 public class Order {
-
-    @Id
     private UUID id;
-
     private Instant timestamp;
-
-    @ElementCollection
-    private List<String> items;
+    private List<OrderItem> items;
 
     public Order() {
     }
 
-    public Order(UUID id, Instant timestamp, List<String> items) {
+    public Order(UUID id, Instant timestamp, List<OrderItem> items) {
         this.id = id;
         this.timestamp = timestamp;
         this.items = items;
@@ -38,15 +30,15 @@ public class Order {
         return timestamp;
     }
 
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
     public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
 
-    public List<String> getItems() {
-        return items;
-    }
-
-    public void setItems(List<String> items) {
+    public void setItems(List<OrderItem> items) {
         this.items = items;
     }
 }
