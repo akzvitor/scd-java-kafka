@@ -1,7 +1,7 @@
 com\akzvitor\inventoryservice\model\Product.class
 com\akzvitor\inventoryservice\model\OrderItem.class
 com\akzvitor\inventoryservice\InventoryServiceApplication.class
-com\akzvitor\inventoryservice\consumer\OrderConsumer.class
 com\akzvitor\inventoryservice\service\InventoryService.class
+com\akzvitor\inventoryservice\listener\OrderListener.class
 com\akzvitor\inventoryservice\model\Order.class
 com\akzvitor\inventoryservice\repository\ProductRepository.class

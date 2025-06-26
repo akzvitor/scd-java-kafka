@@ -15,7 +15,7 @@ Professor: Elias Batista Ferreira
 
 ### Criação dos tópicos kafka
 
-1 - Iniciar os containers do kafka, zookeper e postgres pelo docker-compose, executando o comando:
+1 - Iniciar os containers do kafka, zookeper e postgres pelo docker-compose, executando o seguinte comando na pasta raiz do projeto (padrão scd-java-kafka):
 
 ```bash
 docker-compose up -d
@@ -41,25 +41,42 @@ vai registrar os pedidos a partir do serviço order-service, e ser lido pelo ser
 A partir da leitura de um pedido do tópico orders, o serviço inventory-service publica no tópico criado pelo segundo comando, inventory-events,
 que vai ser lido pelo serviço notification-service, responsável apenas por consumir o tópico e enviar uma notificação de acordo.
 
-3 - Instalar as dependencias do maven e executar os serviços em seus respectivos diretórios:
+3 - Instalar as dependencias do maven e executar os serviços em seus respectivos diretórios, cada um em um terminal:
 
 ```bash
-cd order-service && mvn package clean && mvn spring-boot:run && cd ..
-```
-
-```bash
-cd inventory-service && mvn package clean && mvn spring-boot:run && cd ..
+cd order-service && mvn package clean && mvn spring-boot:run
 ```
 
 ```bash
-cd notification-service && mvn package clean && mvn spring-boot:run && cd ..
-```
+cd inventory-service && mvn package clean && mvn spring-boot:run
+
+```bash
+cd notification-service && mvn package clean && mvn spring-boot:run
 ```
 
-Esses comandos são responsáveis por iniciar cada um dos serviços do projeto.
+Esses comandos são responsáveis por iniciar cada um dos serviços do projeto. Importante: cada serviço precisa ficar
+em execução durante a aplicação, então é necessário executar cada um em um terminal.
+
 O serviço inventory-service, além de ouvir/ler o tópico order e publicar no inventory-events, também
 inicializa uma tabela product com alguns produtos predefinidos, que podem ser encontrados e alterados
 no caminho ./inventory-service/src/main/resources/data.sql
+
+Para simplificar, a inicialização dos produtos é feita de uma maneira que, se já existir produtos com os ID's (code) na tabela,
+não tenta adicionar novamente, já que o ID é uma PK.
+
+4 - Visualizar banco de dados (opcional)
+
+Para ver na prática o processamento dos pedidos, é possível visualizar o banco de dados do container
+via psql, executando o comando:
+```bash
+docker exec -it postgres-scd-jkm psql -U vitor -d inventory
+```
+Após executar no terminal, será possível executar alguns comandos para visualizar e até mesmo manipular a tabela. Para informações adicionais, digite o comando `help`.
+
+Comandos principais:
+- `\dt` para visualizar as tabelas do banco;
+- `SELECT * FROM product;` para visualizar os produtos da tabela product;
+- `DELETE FROM product;` para deletar todos os dados da tabela product;
 
 ## Escalabilidade
 

@@ -2,7 +2,8 @@ package com.akzvitor.orderservice.controller;
 
 import com.akzvitor.orderservice.model.Order;
 import com.akzvitor.orderservice.model.OrderItem;
-import com.akzvitor.orderservice.kafka.OrderProducer;
+import com.akzvitor.orderservice.producer.OrderProducer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

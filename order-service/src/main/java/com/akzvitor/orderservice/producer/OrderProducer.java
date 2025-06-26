@@ -1,4 +1,4 @@
-package com.akzvitor.orderservice.kafka;
+package com.akzvitor.orderservice.producer;
 
 import com.akzvitor.orderservice.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;

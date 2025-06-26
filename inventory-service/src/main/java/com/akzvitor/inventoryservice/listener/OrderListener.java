@@ -1,4 +1,4 @@
-package com.akzvitor.inventoryservice.consumer;
+package com.akzvitor.inventoryservice.listener;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class OrderConsumer {
+public class OrderListener {
 
     @Autowired
     private InventoryService inventoryService;
