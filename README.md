@@ -1,25 +1,65 @@
 # Plataforma de Comércio Eletrônico - Mensageria com Java e Apache Kafka
+Aluno: Vitor Paulo Eterno Godoi - 202201718
+
+Curso: Engenharia de Software - UFG
+Disciplina: Software Concorrente e Distribuído
+Professor: Elias Batista Ferreira
+
+## Visão geral
 
 ## Passo a passo para execução
+### Requisitos
+- Java
+- Maven
+- Docker
 
 ### Criação dos tópicos kafka
 
-1 - Iniciar os containers kafka e zookeper pelo docker-compose, executando o comando:
+1 - Iniciar os containers do kafka, zookeper e postgres pelo docker-compose, executando o comando:
 
 ```bash
 docker-compose up -d
 ```
 
+Esse comando vai baixar as imagens necessárias e iniciar os containers, sendo possível executar os comandos de criação dos tópicos do
+kafka e persistir dados no banco com o postgres.
+
 2 - Criar os tópicos necessários, executando:
 
 ```bash
 docker exec -it kafka-scd-jkm kafka-topics --create --topic orders --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
-
+```
 em seguida
 
 ```bash
 docker exec -it kafka-scd-jkm kafka-topics --create --topic inventory-events --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 ```
+
+Cada um dos comandos cria um tópico no container do kafka (kafka-scd-jkm) que está rodando, o primeiro cria o orders, que
+vai registrar os pedidos a partir do serviço order-service, e ser lido pelo serviço inventory-service.
+
+A partir da leitura de um pedido do tópico orders, o serviço inventory-service publica no tópico criado pelo segundo comando, inventory-events,
+que vai ser lido pelo serviço notification-service, responsável apenas por consumir o tópico e enviar uma notificação de acordo.
+
+3 - Instalar as dependencias do maven e executar os serviços em seus respectivos diretórios:
+
+```bash
+cd order-service && mvn package clean && mvn spring-boot:run && cd ..
+```
+
+```bash
+cd inventory-service && mvn package clean && mvn spring-boot:run && cd ..
+```
+
+```bash
+cd notification-service && mvn package clean && mvn spring-boot:run && cd ..
+```
+```
+
+Esses comandos são responsáveis por iniciar cada um dos serviços do projeto.
+O serviço inventory-service, além de ouvir/ler o tópico order e publicar no inventory-events, também
+inicializa uma tabela product com alguns produtos predefinidos, que podem ser encontrados e alterados
+no caminho ./inventory-service/src/main/resources/data.sql
 
 ## Escalabilidade
 
@@ -28,8 +68,6 @@ docker exec -it kafka-scd-jkm kafka-topics --create --topic inventory-events --b
 ## Idempotência
 
 ## Explicação dos serviços
-
-Aluno: Vitor Paulo Eterno Godoi - 202201718
 
 ## Informações adicionais - documento de definição do projeto
 1. Objetivo geral
