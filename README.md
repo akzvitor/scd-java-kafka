@@ -93,7 +93,14 @@ no caminho ./inventory-service/src/main/resources/data.sql
 Para simplificar, a inicialização dos produtos é feita de uma maneira que, se já existir produtos com os ID's (code) na tabela,
 não tenta adicionar novamente, já que o ID é uma PK.
 
-4 - Visualizar banco de dados (opcional)
+4 - Requisição de pedidos
+Para fazer a requisição basta executar um comando seguindo o modelo:
+```bash
+curl -X POST http://localhost:8080/orders -H "Content-Type: application/json" -d '[{"productCode": "ABC123", "quantity": 10}]'
+```
+Pode ser editado: productCode trata-se do id (code) do pedido, e "quantity" a quantidade.
+
+5 - Visualizar banco de dados (opcional)
 
 Para ver na prática o processamento dos pedidos, é possível visualizar o banco de dados do container
 via psql, executando o comando:
