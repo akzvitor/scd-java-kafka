@@ -2,12 +2,40 @@
 Aluno: Vitor Paulo Eterno Godoi - 202201718
 
 Curso: Engenharia de Software - UFG
+
 Disciplina: Software Concorrente e Distribuído
+
 Professor: Elias Batista Ferreira
 
 ## Visão geral
+Esse projeto simula uma plataforma de e-commerce, utilizando um sistema simples de mensageria
+com Java e Kafka como principais tecnologias.
+
+A arquitetura geral do projeto se baseia em 3 microsserviços distintos, que podem ser distinguidos pelos 3 diretórios principais:
+- inventory-service: representa o serviço responsável pelo gerenciamento do inventário (ou estoque), cria e manipula a tabela de produtos de acordo com o que consome e publica nos
+    2 tópicos disponíveis;
+- notification-service: representa o serviço responsável por enviar notificações de acordo com o que consome no tópico `inventory-events`;
+- order-service: representa o serviço responsável por publicar pedidos no tópico `orders`.
+
+A funcionalidade, então, consiste em criar tópicos kafka para publicação e consumo de mensagens, além de manipular o banco de dados de acordo.
+
+**Explicação técnica detalhada dos serviços**
+- inventory-service:
+    - model -> classes de modelo da entidade que representa os produtos, Product, e classes para fins de desserialização, Order e OrderItem
+    - listener -> classe que consome o tópico, ou seja, ouve e processa a mensagem publicada. Nela é especificado de qual tópico ela é "assinante", nesse caso o `orders`,
+        e também contém a lógica de processamento do pedido, chamando o método da classe InventoryService.
+    - repository -> usa jpa para as funções básicas de um repositório no banco (buscar por id, salvar, etc).
+    - service -> lógica de processamento de pedidos recebidos pelo listener e publicação no tópico `inventory-event`.
+- notification-service:
+    - listener -> mesma lógica do listener explicado anteriormente, do inventory-service, a diferença é que ouve o tópico `inventory-event`.
+    - service -> lógica de processar a mensagem e imprimir no console de acordo com status, erro, etc.
+- order-service: representa o serviço responsável por publicar pedidos no tópico `orders`.
+    - config -> configuração do producer, logica de serialização dos objetos de pedidos que vão ser enviados como mensagem
+    - controller -> define o endpoint da api para realizar requisições de pedidos.
+    - producer -> classe que publica a mensagem (produtor).
 
 ## Passo a passo para execução
+
 ### Requisitos
 - Java
 - Maven
@@ -49,6 +77,7 @@ cd order-service && mvn package clean && mvn spring-boot:run
 
 ```bash
 cd inventory-service && mvn package clean && mvn spring-boot:run
+```
 
 ```bash
 cd notification-service && mvn package clean && mvn spring-boot:run
@@ -79,12 +108,32 @@ Comandos principais:
 - `DELETE FROM product;` para deletar todos os dados da tabela product;
 
 ## Escalabilidade
+O Apache Kafka foi projetado para alta escalabilidade horizontal. Cada tópico Kafka pode ser dividido em múltiplas partições, permitindo que as mensagens sejam processadas em paralelo por múltiplos consumidores. No contexto deste projeto:
+
+- Podemos escalar o `order-service` horizontalmente para lidar com um maior número de requisições REST simultâneas, pois ele apenas publica mensagens.
+- O `inventory-service` pode ser replicado em várias instâncias, e o Kafka distribuirá as partições entre os consumidores do mesmo grupo, balanceando a carga de forma automática.
+- Da mesma forma, o `notification-service` pode ser escalado para processar eventos de inventário em paralelo, garantindo menor latência na entrega das notificações.
+
+Essa abordagem permite aumentar o throughput do sistema distribuído sem alterar a lógica de negócio dos serviços.
 
 ## Tolerância à falha
+Tolerância à falha é a capacidade de continuar funcionando mesmo diante de falhas parciais no sistema. O Kafka oferece essa tolerância por meio de:
+
+- **Replicação de partições entre brokers**: se um broker que lidera uma partição falhar, outro broker com réplica pode assumir como líder, garantindo disponibilidade.
+- **Persistência das mensagens**: as mensagens ficam armazenadas até que sejam consumidas e o offset seja confirmado pelo consumidor.
+
+Exemplo prático: caso o `inventory-service` caia após consumir uma mensagem mas antes de processá-la completamente, como ele não confirmou o offset, ao reiniciar ele poderá reprocessar a mesma mensagem. Essa recuperação automática evita perda de mensagens e garante confiabilidade no processamento.
 
 ## Idempotência
+Idempotência significa que uma mesma operação pode ser executada uma ou mais vezes com o mesmo efeito final. No caso do `inventory-service`, isso é essencial para evitar inconsistências no estoque.
 
-## Explicação dos serviços
+Para garantir idempotência:
+
+- Cada pedido possui um `UUID` único.
+- Antes de processar um pedido, o serviço pode verificar se o UUID já foi processado (armazenando, por exemplo, os IDs dos pedidos tratados em cache ou banco).
+- Se já foi processado, o serviço ignora; caso contrário, continua o processamento normalmente.
+
+Essa abordagem evita que um mesmo pedido cause múltiplas reservas de estoque, mesmo que a mensagem seja reprocessada devido a falhas ou reinicializações.
 
 ## Informações adicionais - documento de definição do projeto
 1. Objetivo geral
