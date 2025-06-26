@@ -1,0 +1,3 @@
+com\akzvitor\notificationservice\service\NotificationService.class
+com\akzvitor\notificationservice\listener\InventoryEventListener.class
+com\akzvitor\notificationservice\NotificationServiceApplication.class
